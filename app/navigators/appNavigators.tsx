@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "../screens/Home/home";
 import Counter from "../screens/counter/counter";
 import Camera from "../screens/Camera/Camera";
-
+import ViewGallary from "../screens/gallary/gallary";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +17,8 @@ function AppNavigator() {
                 <Stack.Screen name='Home' component={Home} options={{headerShown: false}}/>
                 <Stack.Screen name='Counter' component={Counter} options={{headerShown: false}}/>
                 <Stack.Screen name='Camera' component={Camera} options={{headerShown: false}}/>
+                <Stack.Screen name='ViewGallary' component={ViewGallary} options={{headerShown: false}}/>
+
             </Stack.Navigator>
         </NavigationContainer>
     )

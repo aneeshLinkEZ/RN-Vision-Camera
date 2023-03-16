@@ -1,11 +1,10 @@
 import { useIsFocused } from '@react-navigation/native';
 import { Button, Icon } from '@rneui/base';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Text, StyleSheet, Linking, View, Touchable, TouchableOpacity } from 'react-native';
-import { Camera, useCameraDevices, CameraDeviceFormat, useFrameProcessor, RNCamera } from 'react-native-vision-camera';
-import { CameraDevice } from 'react-native-vision-camera';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { ActivityIndicator, Text, StyleSheet, Linking, View, Touchable, TouchableOpacity, Image, Platform } from 'react-native';
 
+import { Camera, useCameraDevices } from 'react-native-vision-camera';
+import RNFS from 'react-native-fs';
 import {
     responsiveHeight,
     responsiveWidth,
@@ -46,13 +45,21 @@ export default function CameraScreen({ navigation }) {
         }
         getPermission();
     }, [])
-    useEffect(()=>{
+    useEffect(() => {
         setDevice(devices.back)
-    },[devices])
+    }, [devices])
 
 
     // taking photo
     const capturePhoto = async () => {
+        if (camera.current !== null) {
+            const photo = await camera.current.takePhoto({});
+            setImageSource(photo.path);
+            setShowCamera(false);
+            savePhoto(photo.path);
+            console.log(photo.path);
+        }
+
         if (camera.current !== null) {
             const photo = await camera.current.takePhoto({
                 flash: flash,
@@ -64,6 +71,12 @@ export default function CameraScreen({ navigation }) {
             setShowCamera(false);
             console.log(photo.path);
         }
+    }
+
+    async function savePhoto(data) {
+        const filename = 'test.jpeg';
+        let result = await RNFS.moveFile(data, `${RNFS.PicturesDirectoryPath}/${filename}`);
+        console.log(RNFS.PicturesDirectoryPath);
     }
 
     // start video Record
@@ -89,16 +102,14 @@ export default function CameraScreen({ navigation }) {
     function flipCamera() {
         // const newFacing = device === 'front' ? 'back' : 'front';
         // CameraDevice.setCameraFacing(newFacing);
-        if(device === devices.back){
+        if (device === devices.back) {
             setDevice(devices.front)
-        }else{
+        } else {
             setDevice(devices.back)
 
         }
     }
-    const handleFlipToFrontCamera = async () => {
-        await cameraRef.current.flipCamera();
-    };
+
 
     if (device == null) return <ActivityIndicator style={{ flex: 1 }} />
     return (
@@ -116,7 +127,6 @@ export default function CameraScreen({ navigation }) {
                         video={false}
                         audio={false}
                     />
-
                     <View style={{ position: "absolute", paddingBottom: responsiveHeight(90), right: 20 }}>
                         {flash === "off" ? (<View>
                             <Icon type='ionicon' name="flash" iconStyle={{ color: "white" }} style={{ borderRadius: 5 }} onPress={() => {
@@ -145,17 +155,28 @@ export default function CameraScreen({ navigation }) {
                             <Text onPress={() => { setPhotoShoot(true) }}>Photo</Text>
                         </View>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(40) }}>
+                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(10) }}>
+                                <TouchableOpacity style={styles.viewButton} onPress={()=> navigation.navigate("ViewGallary")}>
+                                    <Image
+                                        style={styles.image}
+                                        source={{
+                                            uri: `file://'${imageSource}`,
+                                        }}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
                                 <TouchableOpacity style={styles.captureButton} onPress={() => capturePhoto()}>
                                     <Text style={styles.captureButtonText}>CAPTURE</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
                                 <TouchableOpacity style={styles.viewButton} onPress={flipCamera}>
-                                <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7"}]} style={{}}/>
+                                    <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7" }]} style={{}} />
                                 </TouchableOpacity>
                             </View>
                         </View>
+
                     </View>
                 </View>
             ) : (<View style={styles.container}>
@@ -210,10 +231,10 @@ export default function CameraScreen({ navigation }) {
                             )}
 
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15)}}>
+                        <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
                             <TouchableOpacity style={styles.viewButton} onPress={flipCamera}>
 
-                                <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7"}]} style={{}}/>
+                                <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7" }]} style={{}} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -245,6 +266,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    image: {
+        width: '100%',
+        height: 'auto',
+        aspectRatio: 1 / 1,
+        borderRadius: 100
+    },
     captureButtonText: {
         fontSize: 14,
         fontWeight: 'bold',
@@ -258,7 +285,7 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         justifyContent: 'center',
         alignItems: 'center'
-        },
+    },
     viewButtonText: {
         fontSize: 14,
         fontWeight: 'bold',
