@@ -12,7 +12,6 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Root />
-
       </PersistGate>
     </Provider>
   );

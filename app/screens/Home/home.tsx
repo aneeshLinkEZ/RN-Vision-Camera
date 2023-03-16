@@ -15,6 +15,8 @@ function Home({navigation}){
             </Text>
             <Button title={'Counter'} onPress={() => navigation.navigate('Counter')}/>
             <Button title={'Camera'} onPress={() => navigation.navigate('Camera')}/>
+            <Button title={'Bluetooth'} onPress={() => navigation.navigate('Bluetooth')}/>
+
 
         </View>
     )
