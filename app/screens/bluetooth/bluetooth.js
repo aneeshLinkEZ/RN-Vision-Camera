@@ -1,11 +1,18 @@
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
-import BleManager from 'react-native-ble-manager';
-import { PermissionsAndroid } from "react-native";
+// import BleManager from 'react-native-ble-manager';
+import { BleManager } from 'react-native-ble-plx';
 
+import { PermissionsAndroid } from "react-native";
+import { Button } from "@rneui/base";
+
+const bleManager = new BleManager();
 export default function Bluetooth({ navigation }) {
     useEffect(() => {
+        bleManager.start({ showAlert: false, forceLegacy: true });
+    }, []);
 
+    useEffect(() => {
         async function requestLocationPermission() {
             try {
                 const granted = await PermissionsAndroid.check(
@@ -34,61 +41,26 @@ export default function Bluetooth({ navigation }) {
                 console.log('Location permission error:', error);
             }
         }
-
         requestLocationPermission();
     }, [])
-
     const startScan = () => {
-        BleManager.scan([], 5, true).then(results => {
-            console.log('Scanning...');
+        bleManager.startDeviceScan(null, null, (error, device) => {
+            if (error) {
+                // Handle error
+                return;
+            }
+            // Check if the device has the service you're looking for
+            if (device.name === 'MyDevice' && device.serviceUUIDs.includes('00')) {
+                // Do something with the device
+                console.log('Found MyDevice:', device);
+            }
         });
     }
 
-    const cennectBluetooth = () => {
-        BleManager.connect(deviceId)
-            .then(() => {
-                console.log('Connected to ' + deviceId);
-            })
-            .catch((error) => {
-                console.log('Connection error: ' + error);
-            });
-    }
-
-    const cennectedDevice = () => {
-        BleManager.retrieveServices(deviceId)
-            .then((peripheralInfo) => {
-                console.log('Peripheral info:', peripheralInfo);
-                BleManager.retrieveCharacteristics(deviceId, serviceUUID)
-                    .then((characteristics) => {
-                        console.log('Characteristics:', characteristics);
-                    });
-            });
-
-    }
-
-    const writeBluetooth = () => {
-        BleManager.write(deviceId, serviceUUID, characteristicUUID, data)
-            .then(() => {
-                console.log('Write success');
-            })
-            .catch((error) => {
-                console.log('Write error:', error);
-            });
-
-    }
-
-    const readBluetooth = () => {
-        BleManager.read(deviceId, serviceUUID, characteristicUUID)
-            .then((data) => {
-                console.log('Read data:', data);
-            })
-            .catch((error) => {
-                console.log('Read error:', error);
-            });
-    }
     return (
         <View>
             <Text>Bluetooth</Text>
+            <Button title={"Scan"} onPress={() => {startScan()}} />
         </View>
     )
 }

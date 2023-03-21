@@ -10,12 +10,10 @@ function Home({navigation}){
             <Text h3>
                 Home
             </Text>
-            <Text>
-                Hello world
-            </Text>
             <Button title={'Counter'} onPress={() => navigation.navigate('Counter')}/>
             <Button title={'Camera'} onPress={() => navigation.navigate('Camera')}/>
             <Button title={'Bluetooth'} onPress={() => navigation.navigate('Bluetooth')}/>
+            <Button title={'blePlxBluetooth'} onPress={() => navigation.navigate('blePlxBluetooth')}/>
 
 
         </View>

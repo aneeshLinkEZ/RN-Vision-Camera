@@ -100,13 +100,10 @@ export default function CameraScreen({ navigation }) {
 
 
     function flipCamera() {
-        // const newFacing = device === 'front' ? 'back' : 'front';
-        // CameraDevice.setCameraFacing(newFacing);
         if (device === devices.back) {
             setDevice(devices.front)
         } else {
             setDevice(devices.back)
-
         }
     }
 
@@ -154,9 +151,9 @@ export default function CameraScreen({ navigation }) {
                             <Text onPress={() => { setPhotoShoot(false) }}>Video</Text>
                             <Text onPress={() => { setPhotoShoot(true) }}>Photo</Text>
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(10) }}>
-                                <TouchableOpacity style={styles.viewButton} onPress={()=> navigation.navigate("ViewGallary")}>
+                        <View style={{ flexDirection: 'row', width: responsiveWidth(100), justifyContent: "space-evenly", paddingBottom: 30 }}>
+                            <View style={{ justifyContent: 'center', alignItems: "center" }}>
+                                <TouchableOpacity style={styles.viewButton} onPress={() => navigation.navigate("ViewGallary")}>
                                     <Image
                                         style={styles.image}
                                         source={{
@@ -165,12 +162,12 @@ export default function CameraScreen({ navigation }) {
                                     />
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
+                            <View style={{ justifyContent: 'center', alignItems: "center" }}>
                                 <TouchableOpacity style={styles.captureButton} onPress={() => capturePhoto()}>
                                     <Text style={styles.captureButtonText}>CAPTURE</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
+                            <View style={{ justifyContent: 'center', alignItems: "center" }}>
                                 <TouchableOpacity style={styles.viewButton} onPress={flipCamera}>
                                     <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7" }]} style={{}} />
                                 </TouchableOpacity>
@@ -218,8 +215,18 @@ export default function CameraScreen({ navigation }) {
                         <Text onPress={() => { setPhotoShoot(false) }}>Video</Text>
                         <Text onPress={() => { setPhotoShoot(true) }}>Photo</Text>
                     </View>
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(40) }}>
+                    <View style={{ flexDirection: 'row', width: responsiveWidth(100), justifyContent: "space-evenly", paddingBottom: 20 }}>
+                        <View style={{ justifyContent: 'center', alignItems: "center" }}>
+                            <TouchableOpacity style={styles.viewButton} onPress={() => navigation.navigate("ViewGallary")}>
+                                <Image
+                                    style={styles.image}
+                                    source={{
+                                        uri: `file://'${imageSource}`,
+                                    }}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ justifyContent: 'center', alignItems: "center"}}>
                             {!isRecording ? (
                                 <TouchableOpacity style={styles.startVideo} onPress={() => { startRecording() }}>
                                     <Text style={styles.startVideoText}></Text>
@@ -231,7 +238,7 @@ export default function CameraScreen({ navigation }) {
                             )}
 
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: "center", paddingLeft: responsiveWidth(15) }}>
+                        <View style={{ justifyContent: 'center', alignItems: "center"}}>
                             <TouchableOpacity style={styles.viewButton} onPress={flipCamera}>
 
                                 <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7" }]} style={{}} />
