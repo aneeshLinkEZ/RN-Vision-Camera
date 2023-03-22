@@ -10,6 +10,7 @@ After Clone Run.
 2.   "npm run android"
 3.   "npm start"
 4.   "adb shell input keyevent 82" (for open devp mode in real device)
+5.   "npx kill-port 8081"
 
 
 
