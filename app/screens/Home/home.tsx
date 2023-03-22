@@ -12,6 +12,8 @@ function Home({ navigation }) {
                 <Button containerStyle={{paddingVertical: 10}} title={'Counter'} onPress={() => navigation.navigate('Counter')} />
                 <Button title={'Camera'} onPress={() => navigation.navigate('Camera')} />
                 <Button containerStyle={{paddingVertical: 10}} title={'blePlxBluetooth'} onPress={() => navigation.navigate('blePlxBluetooth')} />
+                <Button title={'FileSystem'} onPress={() => navigation.navigate('FileSystemHandle')} />
+
         </View>
     )
 }
