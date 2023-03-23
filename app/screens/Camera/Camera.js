@@ -118,7 +118,7 @@ export default function CameraScreen({ navigation }) {
     }
 
 
-    // if (device == null) return <ActivityIndicator style={{ flex: 1 }} />
+    if (device == null) return <ActivityIndicator style={{ flex: 1 }} />
     return (
         <View style={Styles.container}>
             {photoShoot === true ? (
