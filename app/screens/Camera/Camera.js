@@ -76,9 +76,8 @@ export default function CameraScreen({ navigation }) {
     async function savePhoto(data) {
         const path = data;
         const filename = 'test.jpeg';
-        const newPath = `${Dirs.DocumentDir}/${Date.now()}.jpeg`
-        //DocumentDirectoryPath + "/assets"
         
+        const newPath = `${Dirs.DocumentDir}/${Date.now()}.jpeg`
         console.log("New path", FileSystem.mkdir(`${Dirs.DocumentDir}/basicApp`));
 
         moveFile(data, newPath);

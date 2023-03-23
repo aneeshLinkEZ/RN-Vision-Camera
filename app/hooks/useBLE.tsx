@@ -1,14 +1,14 @@
 import { isDeclaration } from "@babel/types";
 import { useState } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
-import { BleError, BleManager, Characteristic, Device } from "react-native-ble-plx";
-import {atob} from 'react-native-quick-base64';
+import { BleError, BleManager, readCharacteristicForService, Device,cancelConnection } from "react-native-ble-plx";
+import { atob } from 'react-native-quick-base64';
 type PermissionCallback = (result: boolean) => void;
 
 const bleManager = new BleManager();
-const deviceAdd ="D9:7A:C9:C5:56:7D";
-const deviceUUID = "c1b25000-caaf-6d0e-4c33-7dae30052840";
-const deviceCHAR = "c1b25010-caaf-6d0e-4c33-7dae30052840"
+const deviceAdd = "C4:BE:B8:A5:15:C8";
+const serviceUUID = "c1b25000-caaf-6d0e-4c33-7dae30052840";
+const characteristicUUID = "c1b25010-caaf-6d0e-4c33-7dae30052840"
 
 
 interface BluetoothLowEnergyApi {
@@ -16,14 +16,15 @@ interface BluetoothLowEnergyApi {
     scanForDevices(): void;
     currentDevices: Device | null;
     connectToDevice(device: Device): Promise<void>;
+    disConnect(): void;
     data: string;
     allDevices: Device[];
 }
 
 export default function useBLE(): BluetoothLowEnergyApi {
 
-    const [allDevices, setAllDevices] = useState<Device[]>([]);
-    const [manager, setManager] = useState(null);
+    const [allDevices, setAllDevices] = useState([]);
+    const [devObj, setDevObj] = useState({});
     const [currentDevices, setConnectedDevice] = useState<Device | null>(null);
     const [data, setData] = useState("");
 
@@ -49,12 +50,15 @@ export default function useBLE(): BluetoothLowEnergyApi {
     const isDuplicateDevice = (devices: Device[], nextDevice: Device) =>
         devices.findIndex(device => nextDevice.id === device.id) > -1;
 
+
+
     const scanForDevices = () => {
         bleManager.startDeviceScan(null, null, (error, device) => {
             if (error) {
                 console.log(error);
             }
-            if (device) {
+            if (device?.name === "SY295") {
+
                 setAllDevices((prevState) => {
                     if (!isDuplicateDevice(prevState, device)) {
                         return [...prevState, device];
@@ -63,88 +67,79 @@ export default function useBLE(): BluetoothLowEnergyApi {
                 });
             }
         })
+
     }
 
-    const connectToDevice =async (device : Device) => {
-        try{
+    const connectToDevice = async (device: Device) => {
+
+        try {
             const deviceConnection = await bleManager.connectToDevice(device);
+            console.log("vsfdSGV   => ", deviceConnection);
+
             setConnectedDevice(deviceConnection);
             bleManager.stopDeviceScan();
-            await deviceConnection.discoverAllServicesAndCharacteristics();
-            // startStreamingData(device);
+            const v = await deviceConnection.discoverAllServicesAndCharacteristics();
+            console.log(v);
 
+            // Read data from a characteristic
+            // bleManager.readCharacteristicForDevice() 
+            readCharacteristicForService(serviceUUID, characteristicUUID)
+                .then((characteristic) => {
+                    console.log('Read data:', characteristic.value);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
 
-        } catch (e){
+        } catch (e) {
             alert(e)
             console.log("Error while Connecting " + e);
         }
     }
 
-    const startStreamingData = async (device: Device) => {
-        if(device){
-            device.monitorCharacteristicForService(deviceUUID, deviceCHAR,onDataUpdate)
-        }else{
-            console.error("No Device Connected")
-        }
+    const disConnect = () => {
+        // Disconnect from the device
+        cancelConnection()
+            .then(() => {
+                alert("Disconnected from device");
+                console.log('Disconnected from device');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
-    const onDataUpdate = (error: BleError | null, characteristic : Characteristic | null)=> {
-        if(error){
-            console.error(error);
-            return;
-        } else if(!characteristic?.value){
-            console.error("No Characteristic Found");
-            return;
-        }
+    // const startStreamingData = async (device: Device) => {
+    //     if (device) {
+    //         device.monitorCharacteristicForService(deviceUUID, deviceCHAR, onDataUpdate)
+    //     } else {
+    //         console.error("No Device Connected")
+    //     }
+    // }
 
-        // const rowData = atob(characteristic.value);
-        const rowData = "3564z6894"
-        const firstBitValue = String(rowData)
-        if(firstBitValue){
-            setData(firstBitValue);
-        }
-    }
-
-    // const connectToDevice = async (deviceId) => {
-    //     const device = allDevices.find((d) => d.id === deviceId);
-    //     if (!device) {
-    //         console.log('Device not found!');
+    // const onDataUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
+    //     if (error) {
+    //         console.error(error);
+    //         return;
+    //     } else if (!characteristic?.value) {
+    //         console.error("No Characteristic Found");
     //         return;
     //     }
 
-    //     try {
-    //         await device.connect();
-    //         setConnectedDevice(device);
-    //     } catch (error) {
-    //         console.log('Error while connecting:', error);
+    //     // const rowData = atob(characteristic.value);
+    //     const rowData = "3564z6894"
+    //     const firstBitValue = String(rowData)
+    //     if (firstBitValue) {
+    //         setData(firstBitValue);
     //     }
-    // };
-
-    // const stopScan = () => {
-    //     const b = bleManager.stopDeviceScan();
-    //     console.log(b);
-        
-    // };
-
-    // const disconnectFromDevice = async () => {
-    //     if (!connectedDevice) {
-    //         console.log('No connected device!');
-    //         return;
-    //     }
-
-    //     try {
-    //         await connectedDevice.cancelConnection();
-    //         setConnectedDevice(null);
-    //     } catch (error) {
-    //         console.log('Error while disconnecting:', error);
-    //     }
-    // };
+    // }
 
     return {
         requestPermissions,
         scanForDevices,
         allDevices,
         connectToDevice,
+        disConnect,
         currentDevices,
         data,
     }

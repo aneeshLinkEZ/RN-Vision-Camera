@@ -27,7 +27,7 @@ export default function BlePlxBluetooth({ navigation }) {
         setVisible(!visible);
     };
 
-    const showDetailsPopup=()=>{
+    const showDetailsPopup = () => {
         setShowDetails(!showDetails);
     }
 
@@ -36,11 +36,12 @@ export default function BlePlxBluetooth({ navigation }) {
         scanForDevices,
         allDevices,
         connectToDevice,
+        disConnect,
         currentDevices,
         data
     } = useBLE();
 
- 
+
     useMemo(() => {
         requestPermissions((isGranted: boolean) => {
             // alert("The Android Permission is Granted? " + isGranted)
@@ -55,26 +56,30 @@ export default function BlePlxBluetooth({ navigation }) {
     }
 
     const ModalPopUp = (data: any) => {
-           return( <View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
-                <Text h4>Device Datails</Text>
-                <Text >{device.name}</Text>
-                <Text >{device.id}</Text>
-                <Text>{device?.serviceData}</Text>
-                <Button title="Connect" buttonStyle={Styles.connectBtn} onPress={()=>{connectToDevice(device.id)}} />
-            </View>)
+        return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
+            <Text h4>Device Datails</Text>
+            <Text >{device.name}</Text>
+            <Text >{device.id}</Text>
+            {/* <Text>{device?.serviceData}</Text> */}
+            <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                <Button title="Connect" buttonStyle={Styles.connectBtn} onPress={() => { connectToDevice(device.id), toggleOverlay() }} />
+
+                <Button title="Disconnect" buttonStyle={[Styles.connectBtn,{width: 105}]} onPress={() => { disConnect(), toggleOverlay() }} />
+            </View>
+        </View>)
     }
     const ShowDetailsModal = (data: any) => {
-        return( <View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
-             <Text h4>show Datails</Text>
-             <Text >Name : {deviceDetails?.name || "null"}</Text>
-             <Text >Id : {deviceDetails?.id || "null"}</Text>
-             <Text>serviceData : {deviceDetails?.serviceData || "null"}</Text>
+        return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
+            <Text h4>show Datails</Text>
+            <Text >Name : {deviceDetails?.name || "null"}</Text>
+            <Text >Id : {deviceDetails?.id || "null"}</Text>
+            <Text>serviceData : {deviceDetails?.serviceData || "null"}</Text>
 
-             <Text>serviceUUIDs : {deviceDetails?.serviceUUIDs || "null"}</Text>
-             <Text>characteristic : {deviceDetails?.characteristic || "null"}</Text>
-             <Button title="Close" buttonStyle={Styles.connectBtn} onPress={showDetailsPopup} />
-         </View>)
- }
+            <Text>serviceUUIDs : {deviceDetails?.serviceUUIDs || "null"}</Text>
+            <Text>characteristic : {deviceDetails?.characteristic || "null"}</Text>
+            <Button title="Close" buttonStyle={Styles.connectBtn} onPress={showDetailsPopup} />
+        </View>)
+    }
 
 
 
@@ -96,7 +101,7 @@ export default function BlePlxBluetooth({ navigation }) {
                             </View>
                             <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
                                 <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(device) }} />
-                                <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device)}}/>
+                                <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device) }} />
                                 <Button title={"disconnect"} />
                                 <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
                                     <ModalPopUp {...device} />
@@ -133,9 +138,10 @@ const Styles = StyleSheet.create({
 
     },
     connectBtn: {
-        width: responsiveWidth(10),
+        width: 85,
         borderRadius: 5,
-        alignSelf: "flex-end"
+        alignSelf: "flex-end",
+        marginLeft: 5
     },
     loader: {
         flex: 1,
