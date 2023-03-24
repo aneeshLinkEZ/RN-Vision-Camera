@@ -1,14 +1,14 @@
 import { isDeclaration } from "@babel/types";
 import { useState } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
-import { BleError, BleManager, readCharacteristicForService, Device,cancelConnection } from "react-native-ble-plx";
+import { BleError, BleManager, readCharacteristicForService, Device, cancelConnection } from "react-native-ble-plx";
 import { atob } from 'react-native-quick-base64';
 type PermissionCallback = (result: boolean) => void;
 
 const bleManager = new BleManager();
 const deviceAdd = "C4:BE:B8:A5:15:C8";
 const serviceUUID = "c1b25000-caaf-6d0e-4c33-7dae30052840";
-const characteristicUUID = "c1b25010-caaf-6d0e-4c33-7dae30052840"
+const characteristicUUID = "c1b25014-caaf-6d0e-4c33-7dae30052840"
 
 
 interface BluetoothLowEnergyApi {
@@ -24,7 +24,7 @@ interface BluetoothLowEnergyApi {
 export default function useBLE(): BluetoothLowEnergyApi {
 
     const [allDevices, setAllDevices] = useState([]);
-    const [devObj, setDevObj] = useState({});
+    const [device, setDevice] = useState();
     const [currentDevices, setConnectedDevice] = useState<Device | null>(null);
     const [data, setData] = useState("");
 
@@ -70,69 +70,78 @@ export default function useBLE(): BluetoothLowEnergyApi {
 
     }
 
-    const connectToDevice = async (device: Device) => {
+    const connectToDevice = async (deviceId: Device) => {
 
         try {
-            const deviceConnection = await bleManager.connectToDevice(device);
-            console.log("vsfdSGV   => ", deviceConnection);
-
+            const deviceConnection = await bleManager.connectToDevice(deviceId);
+            setDevice(deviceConnection);
             setConnectedDevice(deviceConnection);
             bleManager.stopDeviceScan();
-            const v = await deviceConnection.discoverAllServicesAndCharacteristics();
-            console.log(v);
 
-            // Read data from a characteristic
-            // bleManager.readCharacteristicForDevice() 
-            readCharacteristicForService(serviceUUID, characteristicUUID)
+            const d = await deviceConnection.discoverAllServicesAndCharacteristics();
+            // Checking all available services
+            const services = await deviceConnection.services();
+            services.forEach(async service => {
+                const characteristics = await deviceConnection.characteristicsForService(service.uuid);
+                characteristics.forEach(console.log);
+            });
+
+
+            d.readCharacteristicForService(serviceUUID, characteristicUUID)
                 .then((characteristic) => {
                     console.log('Read data:', characteristic.value);
+                    // alert(characteristic.value)
                 })
                 .catch((error) => {
                     console.error(error);
                 });
-
+                startStreamingData(d)
         } catch (e) {
             alert(e)
             console.log("Error while Connecting " + e);
         }
     }
 
-    const disConnect = () => {
-        // Disconnect from the device
-        cancelConnection()
-            .then(() => {
-                alert("Disconnected from device");
-                console.log('Disconnected from device');
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+    const startStreamingData = async (device: Device) => {
+        if(device){
+            device.monitorCharacteristicForService(serviceUUID, characteristicUUID,onDataUpdate)
+        }else{
+            console.error("No Device Connected")
+        }
     }
 
-    // const startStreamingData = async (device: Device) => {
-    //     if (device) {
-    //         device.monitorCharacteristicForService(deviceUUID, deviceCHAR, onDataUpdate)
-    //     } else {
-    //         console.error("No Device Connected")
-    //     }
-    // }
+    const onDataUpdate = (error: BleError | null, characteristic : Characteristic | null)=> {
+        if(error){
+            console.error(error);
+            return;
+        } else if(!characteristic?.value){
+            console.error("No Characteristic Found");
+            return;
+        }
+        // // const rowData = atob(characteristic.value);
+        // const rowData = "3564z6894"
+        // const firstBitValue = String(rowData)
+        // if(firstBitValue){
+        //     setData(firstBitValue);
+        // }
+    }
 
-    // const onDataUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
-    //     if (error) {
-    //         console.error(error);
-    //         return;
-    //     } else if (!characteristic?.value) {
-    //         console.error("No Characteristic Found");
-    //         return;
-    //     }
+    const disConnect = async (deviceId) => {
+        // Disconnect from the device
+        await bleManager.cancelDeviceConnection(deviceId);
 
-    //     // const rowData = atob(characteristic.value);
-    //     const rowData = "3564z6894"
-    //     const firstBitValue = String(rowData)
-    //     if (firstBitValue) {
-    //         setData(firstBitValue);
-    //     }
-    // }
+        // Handle the disconnect event
+        device.onDisconnected((error, disconnectedDevice) => {
+            if (error) {
+                // console.log('Error disconnecting:', error);
+                alert("Error disconnecting: " + error)
+
+            } else {
+                alert("Disconnected from device: " + disconnectedDevice.id)
+                // console.log('Disconnected from device:', disconnectedDevice.id);
+            }
+        });
+    }
 
     return {
         requestPermissions,

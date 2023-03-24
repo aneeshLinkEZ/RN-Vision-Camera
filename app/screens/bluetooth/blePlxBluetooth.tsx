@@ -64,17 +64,18 @@ export default function BlePlxBluetooth({ navigation }) {
             <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
                 <Button title="Connect" buttonStyle={Styles.connectBtn} onPress={() => { connectToDevice(device.id), toggleOverlay() }} />
 
-                <Button title="Disconnect" buttonStyle={[Styles.connectBtn,{width: 105}]} onPress={() => { disConnect(), toggleOverlay() }} />
+                {/* <Button title="Disconnect" buttonStyle={[Styles.connectBtn,{width: 105}]} onPress={() => { disConnect(), toggleOverlay() }} /> */}
             </View>
         </View>)
     }
+    
     const ShowDetailsModal = (data: any) => {
+        console.log("deviceDetails", deviceDetails);
+        
         return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
             <Text h4>show Datails</Text>
             <Text >Name : {deviceDetails?.name || "null"}</Text>
             <Text >Id : {deviceDetails?.id || "null"}</Text>
-            <Text>serviceData : {deviceDetails?.serviceData || "null"}</Text>
-
             <Text>serviceUUIDs : {deviceDetails?.serviceUUIDs || "null"}</Text>
             <Text>characteristic : {deviceDetails?.characteristic || "null"}</Text>
             <Button title="Close" buttonStyle={Styles.connectBtn} onPress={showDetailsPopup} />
@@ -102,7 +103,7 @@ export default function BlePlxBluetooth({ navigation }) {
                             <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
                                 <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(device) }} />
                                 <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device) }} />
-                                <Button title={"disconnect"} />
+                                <Button title={"disconnect"} onPress={() => { disConnect(device.id)}}/>
                                 <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
                                     <ModalPopUp {...device} />
                                 </Overlay>
