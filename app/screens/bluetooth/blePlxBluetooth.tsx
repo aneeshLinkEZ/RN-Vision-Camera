@@ -1,6 +1,7 @@
 import { Button, Overlay, Text } from "@rneui/base";
 import React, { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, View, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Modal, FlatList } from "react-native";
+import { ActivityIndicator, View, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Modal, FlatList, TextInput } from "react-native";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import useBLE from "../../hooks/useBLE";
 import {
     responsiveHeight,
@@ -10,6 +11,8 @@ import {
 
 
 export default function BlePlxBluetooth({ navigation }) {
+    // const allDevices : {} = useAppSelector(state => state.bluetooth.bluetooth)    
+
     const [refreshing, setRefreshing] = useState(false);
     const [visible, setVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -34,11 +37,13 @@ export default function BlePlxBluetooth({ navigation }) {
     const {
         requestPermissions,
         scanForDevices,
-        allDevices,
         connectToDevice,
         disConnect,
+        allDevices,
         currentDevices,
-        data
+        dataMonitoring,
+        dataReading,
+        isConnected
     } = useBLE();
 
 
@@ -51,7 +56,7 @@ export default function BlePlxBluetooth({ navigation }) {
         });
     }, [])
 
-    if (allDevices.length === 0) {
+    if (allDevices?.length === 0) {
         return <ActivityIndicator size="large" color="" style={Styles.loader} />
     }
 
@@ -61,17 +66,17 @@ export default function BlePlxBluetooth({ navigation }) {
             <Text >{device.name}</Text>
             <Text >{device.id}</Text>
             {/* <Text>{device?.serviceData}</Text> */}
-            <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+            <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Button title="Connect" buttonStyle={Styles.connectBtn} onPress={() => { connectToDevice(device.id), toggleOverlay() }} />
 
                 {/* <Button title="Disconnect" buttonStyle={[Styles.connectBtn,{width: 105}]} onPress={() => { disConnect(), toggleOverlay() }} /> */}
             </View>
         </View>)
     }
-    
+
     const ShowDetailsModal = (data: any) => {
         console.log("deviceDetails", deviceDetails);
-        
+
         return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
             <Text h4>show Datails</Text>
             <Text >Name : {deviceDetails?.name || "null"}</Text>
@@ -95,22 +100,47 @@ export default function BlePlxBluetooth({ navigation }) {
 
                 {
                     allDevices.map((device: Device) => (
-                        <View style={{ flexDirection: "row", marginBottom: 5, padding: 2, borderWidth: 1, borderColor: 'black' }}>
-                            <View style={{ flexDirection: "row", width: responsiveWidth(50), alignItems: "center" }}>
-                                <Text style={{ textAlign: "center" }}>{device.name}</Text>
-                                <Text style={{ textAlign: "center" }}>{device.id}</Text>
+                        <View>
+                            <View style={{ marginBottom: 5, padding: 2, borderWidth: 1, borderColor: 'black' }}>
+                                <View style={Styles.row}>
+                                    <View style={{ flexDirection: "column", width: responsiveWidth(50)}}>
+                                        <Text>Name : {device.name}   </Text>
+                                        <Text >Device Id : {device.id}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
+                                        <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(device) }} disabled={isConnected} buttonStyle={{backgroundColor: "green"}}/>
+                                        <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device) }} />
+                                        <Button buttonStyle={{backgroundColor: "red"}} title={"disconnect"} onPress={() => { disConnect(device) }} disabled={!isConnected} />
+                                        <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
+                                            <ModalPopUp {...device} />
+                                        </Overlay>
+                                        <Overlay overlayStyle={Styles.modal} isVisible={showDetails} onBackdropPress={showDetailsPopup}>
+                                            <ShowDetailsModal {...device} />
+                                        </Overlay>
+                                    </View>
+                                </View>
+                                <View>
+                                    <View style={Styles.row}>
+                                        <Text style={{marginVertical: 20}}>Reading Data : </Text>
+                                        <TextInput
+                                            style={Styles.input}
+                                            // onChangeText={onChangeText}
+                                            placeholder="Reading from Ble Device...."
+                                            value={dataReading}
+                                        />
+                                    </View>
+                                    <View style={[Styles.row]}>
+                                        <Text style={{marginVertical: 20}}>Monitoring Data : </Text>
+                                        <TextInput
+                                            style={Styles.input}
+                                            placeholder="Monotoring the Ble Device...."
+                                            // onChangeText={onChangeText}
+                                            value={dataMonitoring}
+                                        />
+                                    </View>
+                                </View>
                             </View>
-                            <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
-                                <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(device) }} />
-                                <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device) }} />
-                                <Button title={"disconnect"} onPress={() => { disConnect(device.id)}}/>
-                                <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
-                                    <ModalPopUp {...device} />
-                                </Overlay>
-                                <Overlay overlayStyle={Styles.modal} isVisible={showDetails} onBackdropPress={showDetailsPopup}>
-                                    <ShowDetailsModal {...device} />
-                                </Overlay>
-                            </View>
+
                         </View>
                     ))
                 }
@@ -126,6 +156,15 @@ const Styles = StyleSheet.create({
         flex: 1,
         margin: 10,
         alignItems: 'center'
+    },
+    row: {
+        flexDirection: "row"
+    },
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
     },
     scrollView: {
         alignItems: 'center',
