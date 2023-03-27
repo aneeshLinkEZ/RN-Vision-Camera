@@ -10,8 +10,6 @@ if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true")
     project(":ReactAndroid:hermes-engine").projectDir = file('../node_modules/react-native/ReactAndroid/hermes-engine')
     include(':react-native-vector-icons')
     project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
-    include ':react-native-fs'
-    project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')
     include ':react-native-file-access'
     project(':react-native-file-access').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-file-access/android')
 }

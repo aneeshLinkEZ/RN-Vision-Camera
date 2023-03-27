@@ -7,7 +7,7 @@ type Movie = {
   releaseYear: string;
 };
 
-const httpConnection = () => {
+const HttpConnection = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -30,7 +30,7 @@ const httpConnection = () => {
   return (
     <View style={{flex: 1, padding: 24}}>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator style={{flex:1}} size={"large"}/>
       ) : (
         <FlatList
           data={data}
@@ -50,4 +50,4 @@ const httpConnection = () => {
 const styles = StyleSheet.create({})
 
 
-export default httpConnection;
+export default HttpConnection;

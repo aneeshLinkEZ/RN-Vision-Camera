@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Button } from '@rneui/base';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Button, Text } from '@rneui/base';
 import { FlatGrid } from 'react-native-super-grid';
 
 function Home({ navigation }) {
@@ -9,13 +9,14 @@ function Home({ navigation }) {
         { title: 'Camera', navigateTo: 'Camera' },
         { title: 'Bluetooth', navigateTo: 'blePlxBluetooth' },
         { title: 'FileSystem', navigateTo: 'FileSystemHandle' },
-        { title: 'WebSocket', navigateTo: 'webSocketConnection' },
-        { title: 'Http', navigateTo: 'httpConnection' }
+        { title: 'WebSocket', navigateTo: 'WebSocketConnection' },
+        { title: 'Http', navigateTo: 'HttpConnection' }
     ]);
 
     return (
         <View style={styles.gridView}>
-            <Text style={{ textAlign: "center" }}>Home</Text>
+            <Text h4 style={{ textAlign: "center" }}>Home</Text>
+            <Text style={{ textAlign: "center" }}>Component list for Experiment</Text>
             <FlatGrid
                 itemDimension={130}
                 data={items}

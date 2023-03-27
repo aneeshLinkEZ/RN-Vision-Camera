@@ -87,65 +87,69 @@ export default function BlePlxBluetooth({ navigation }) {
         </View>)
     }
 
+    const renderItem = ({item}) => {
+        console.log(item);
+        
+        return(
+            <View>
+            <View style={{ marginBottom: 5, padding: 2, borderWidth: 1, borderColor: 'black' }}>
+                <View style={Styles.row}>
+                    <View style={{ flexDirection: "column", width: responsiveWidth(50) }}>
+                        <Text>Name : {item?.name}   </Text>
+                        <Text >Device Id : {item?.id}</Text>
+                    </View>
+                    <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
+                        <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(item) }} disabled={isConnected} buttonStyle={{ backgroundColor: "green" }} />
+                        <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(item) }} />
+                        <Button buttonStyle={{ backgroundColor: "red" }} title={"disconnect"} onPress={() => { disConnect(item) }} disabled={!isConnected} />
+                        <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
+                            <ModalPopUp {...item} />
+                        </Overlay>
+                        <Overlay overlayStyle={Styles.modal} isVisible={showDetails} onBackdropPress={showDetailsPopup}>
+                            <ShowDetailsModal {...item} />
+                        </Overlay>
+                    </View>
+                </View>
+                <View>
+                    <View style={Styles.row}>
+                        <Text style={{ marginVertical: 20 }}>Reading Data : </Text>
+                        <TextInput
+                            style={Styles.input}
+                            // onChangeText={onChangeText}
+                            placeholder="Reading from Ble Device...."
+                            value={dataReading}
+                        />
+                    </View>
+                    <View style={[Styles.row]}>
+                        <Text style={{ marginVertical: 20 }}>Monitoring Data : </Text>
+                        <TextInput
+                            style={Styles.input}
+                            placeholder="Monotoring the Ble Device...."
+                            // onChangeText={onChangeText}
+                            value={dataMonitoring}
+                        />
+                    </View>
+                </View>
+            </View>
+
+        </View>
+        )
+    }
+
 
 
     return (
         <SafeAreaView style={Styles.mainView}>
             <Text h4>BLE-Devices</Text>
-            <ScrollView
-                contentContainerStyle={Styles.scrollView}
+
+            <FlatList
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }>
-
-                {
-                    allDevices.map((device: Device) => (
-                        <View>
-                            <View style={{ marginBottom: 5, padding: 2, borderWidth: 1, borderColor: 'black' }}>
-                                <View style={Styles.row}>
-                                    <View style={{ flexDirection: "column", width: responsiveWidth(50)}}>
-                                        <Text>Name : {device.name}   </Text>
-                                        <Text >Device Id : {device.id}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: "row", width: responsiveWidth(40), justifyContent: "space-between" }}>
-                                        <Button title={"connect"} onPress={() => { toggleOverlay(), setDevice(device) }} disabled={isConnected} buttonStyle={{backgroundColor: "green"}}/>
-                                        <Button title={"Show Details"} onPress={() => { showDetailsPopup(), setDeviceDetails(device) }} />
-                                        <Button buttonStyle={{backgroundColor: "red"}} title={"disconnect"} onPress={() => { disConnect(device) }} disabled={!isConnected} />
-                                        <Overlay overlayStyle={Styles.modal} isVisible={visible} onBackdropPress={toggleOverlay}>
-                                            <ModalPopUp {...device} />
-                                        </Overlay>
-                                        <Overlay overlayStyle={Styles.modal} isVisible={showDetails} onBackdropPress={showDetailsPopup}>
-                                            <ShowDetailsModal {...device} />
-                                        </Overlay>
-                                    </View>
-                                </View>
-                                <View>
-                                    <View style={Styles.row}>
-                                        <Text style={{marginVertical: 20}}>Reading Data : </Text>
-                                        <TextInput
-                                            style={Styles.input}
-                                            // onChangeText={onChangeText}
-                                            placeholder="Reading from Ble Device...."
-                                            value={dataReading}
-                                        />
-                                    </View>
-                                    <View style={[Styles.row]}>
-                                        <Text style={{marginVertical: 20}}>Monitoring Data : </Text>
-                                        <TextInput
-                                            style={Styles.input}
-                                            placeholder="Monotoring the Ble Device...."
-                                            // onChangeText={onChangeText}
-                                            value={dataMonitoring}
-                                        />
-                                    </View>
-                                </View>
-                            </View>
-
-                        </View>
-                    ))
                 }
-            </ScrollView>
-
+                data={allDevices}
+                keyExtractor={item => item.id}
+                renderItem={renderItem}
+            />
             <Button title={"Scan"} style={{ marginVertical: 10 }} />
         </SafeAreaView >
     )

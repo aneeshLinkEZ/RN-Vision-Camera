@@ -1,34 +1,26 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, Button, View, Alert } from 'react-native';
-import { 
-    DocumentDirectoryPath, 
-    writeFile, 
-    CachesDirectoryPath,
-    ExternalCachesDirectoryPath,
-    ExternalStorageDirectoryPath,
-    moveFile
-} from 'react-native-fs';
 import { Dirs, FileSystem } from 'react-native-file-access';
 
 const FileSystemHandle = ({ navigation }) => {
     const [fileText, setFileText] = useState('');
-    const t = DocumentDirectoryPath;
-    const saveFile = async () => {
-        const path = `${t}/${Date.now()}.txt`;
-        const path1 = `${Dirs.SDCardDir}/${Date.now()}.txt`;
-        const c = await FileSystem.mkdir(`${Dirs.DocumentDir}/basicApp`)
-        console.log("New path", c);
+    // const t = DocumentDirectoryPath;
+    // const saveFile = async () => {
+    //     const path = `${t}/${Date.now()}.txt`;
+    //     const path1 = `${Dirs.SDCardDir}/${Date.now()}.txt`;
+    //     const c = await FileSystem.mkdir(`${Dirs.DocumentDir}/basicApp`)
+    //     console.log("New path", c);
 
-        try {
-            // await FileSystem.mv(source: string, target: string)
-            await writeFile(path, fileText, 'utf8');
-            console.log(path1);
-            Alert.alert('File saved', path, [{ text: 'OK' }]);
-            // alert(path1)
-        } catch (e) {
-            console.log('error', e);
-        }
-    };
+    //     try {
+    //         // await FileSystem.mv(source: string, target: string)
+    //         await writeFile(path, fileText, 'utf8');
+    //         console.log(path1);
+    //         Alert.alert('File saved', path, [{ text: 'OK' }]);
+    //         // alert(path1)
+    //     } catch (e) {
+    //         console.log('error', e);
+    //     }
+    // };
 
     return (
         <SafeAreaView style={styles.wrapper}>
@@ -37,6 +29,7 @@ const FileSystemHandle = ({ navigation }) => {
                     <Text style={styles.title}>Enter text for your file:</Text>
                     <TextInput
                         value={fileText}
+                        placeholder="Start Enter..............."
                         onChangeText={setFileText}
                         style={styles.textArea}
                         multiline

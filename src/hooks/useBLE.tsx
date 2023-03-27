@@ -66,8 +66,8 @@ export default function useBLE(): BluetoothLowEnergyApi {
             if (error) {
                 console.log(error);
             }
-            if (device?.name === "SY295") {
-
+            // if (device?.name === "SY295") {
+            if (device) {
                 setAllDevices((prevState) => {
                     if (!isDuplicateDevice(prevState, device)) {
                         return [...prevState, device];
@@ -152,7 +152,7 @@ export default function useBLE(): BluetoothLowEnergyApi {
             // Convert the data to a string
             const base64String = characteristic.value;
             const decodedString = decode(base64String);
-            
+
             console.log(decodedString); // Output: "Test string"
 
             return;

@@ -3,13 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "../screens/Home/home";
 import Counter from "../screens/counter/counter";
-import Camera from "../nativeApi/Camera/Camera";
+import Camera from "../nativeApi/Camera/RNVCamera";
 import ViewGallary from "../screens/gallary/gallary";
 import blePlxBluetooth from "../nativeApi/bluetooth/blePlxBluetooth";
 import FileSystemHandle from "../nativeApi/fileSystem/fileSystem";
 import MATSGrid from "../components/MATSGrid/MATSGrid"
-import webSocketConnection from "../connection/webSocket/webSocket";
-import httpConnection from "../connection/http/httpConnection";
+import WebSocketConnection from "../connection/webSocket/webSocket";
+import HttpConnection from "../connection/http/httpConnection"
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +24,8 @@ function AppNavigator() {
                 <Stack.Screen name='blePlxBluetooth' component={blePlxBluetooth} options={{ headerShown: true }} />
                 <Stack.Screen name='FileSystemHandle' component={FileSystemHandle} options={{ headerShown: true }} />
                 <Stack.Screen name='MATSGrid' component={MATSGrid} options={{ headerShown: true }} />
-                <Stack.Screen name='webSocketConnection' component={webSocketConnection} options={{ headerShown: true }} />
-                <Stack.Screen name='httpConnection' component={httpConnection} options={{ headerShown: true }} />
+                <Stack.Screen name='WebSocketConnection' component={WebSocketConnection} options={{ headerShown: true }} />
+                <Stack.Screen name='HttpConnection' component={HttpConnection} options={{ headerShown: true }} />
 
             </Stack.Navigator>
         </NavigationContainer>

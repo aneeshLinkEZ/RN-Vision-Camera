@@ -2,24 +2,14 @@ import { useIsFocused } from '@react-navigation/native';
 import { Button, Icon } from '@rneui/base';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Text, StyleSheet, Linking, View, Touchable, TouchableOpacity, Image, Platform } from 'react-native';
-import { moveFile,ExternalDirectoryPath } from 'react-native-fs';
 import { Dirs, FileSystem } from 'react-native-file-access';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
-import {
-    responsiveHeight,
-    responsiveWidth,
-    responsiveFontSize
-} from "react-native-responsive-dimensions";
-// import Reanimated, { useAnimatedProps, useSharedValue, withSpring } from "react-native-reanimated"
-
-// const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera)
-// Reanimated.addWhitelistedNativeProps({
-//     zoom: true,
-// })
-
+import { responsiveHeight, responsiveWidth, responsiveFontSize } from "react-native-responsive-dimensions";
+import useCameraApi from '../../hooks/useCameraApi';
 
 
 export default function CameraScreen({ navigation }) {
+    const {requestStoragePermission, isPermission, savePicture, saveVideo} = useCameraApi();
     const camera = useRef(null);
     let cameraRef = null;
     const [isRecording, setIsRecording] = useState(false);
@@ -31,20 +21,15 @@ export default function CameraScreen({ navigation }) {
     const devices = useCameraDevices('wide-angle-camera')
     const [device, setDevice] = useState(false)
     const isFocused = useIsFocused()
-    // const zoom = useSharedValue(0)
 
     useEffect(() => {
-        async function getPermission() {
-            const cameraPermission = await Camera.getCameraPermissionStatus()
-            const newCameraPermission = await Camera.requestCameraPermission()
-            console.log(`Camera permission status: ${newCameraPermission}`);
-            if (newCameraPermission === 'denied') {
-                await Linking.openSettings()
-            }
-            const newMicrophonePermission = await Camera.requestMicrophonePermission()
-        }
-        getPermission();
+        requestStoragePermission()
     }, [])
+
+    useEffect(() => {
+        requestStoragePermission()
+    },[])
+    
     useEffect(() => {
         setDevice(devices.back)
     }, [devices])
@@ -54,10 +39,9 @@ export default function CameraScreen({ navigation }) {
     const capturePhoto = async () => {
         if (camera.current !== null) {
             const photo = await camera.current.takePhoto({});
+            savePicture(photo.path);// Saving Image to Gallary
             setImageSource(photo.path);
             setShowCamera(false);
-            savePhoto(photo.path);
-            console.log(photo.path);
         }
 
         if (camera.current !== null) {
@@ -73,21 +57,6 @@ export default function CameraScreen({ navigation }) {
         }
     }
 
-    async function savePhoto(data) {
-        const path = data;
-        const filename = 'test.jpeg';
-        
-        const newPath = `${Dirs.DocumentDir}/${Date.now()}.jpeg`
-        console.log("New path", FileSystem.mkdir(`${Dirs.DocumentDir}/basicApp`));
-
-        moveFile(data, newPath);
-        alert(`File moved ${path} -->  ${newPath}`)
-
-        const t = await FileSystem.mv(data,newPath)
-        console.log("czfdvgdszfvrzd", t);
-
-        console.log(`File moved ${path} -->  ${t}`);
-    }
 
     // start video Record
     const startRecording = () => {
@@ -95,7 +64,11 @@ export default function CameraScreen({ navigation }) {
         console.log(isRecording);
         let video = camera.current.startRecording({
             flash: flash,
-            onRecordingFinished: (video) => { setIsRecording(false) },
+            onRecordingFinished: (video) => { 
+                setIsRecording(false), 
+                console.log("Video", video.path), 
+                saveVideo(video.path) // Saving video to Gallary
+            },
             onRecordingError: (error) => console.log("Recording Erroe = ", error),
         })
     }
@@ -118,7 +91,7 @@ export default function CameraScreen({ navigation }) {
     }
 
 
-    if (device == null) return <ActivityIndicator style={{ flex: 1 }} />
+    if (device == null) return <ActivityIndicator size={"large"} style={{ flex: 1 }} />
     return (
         <View style={Styles.container}>
             {photoShoot === true ? (
@@ -129,7 +102,7 @@ export default function CameraScreen({ navigation }) {
                         device={device}
                         isActive={isFocused}
                         photo={true}
-                        preset="high"
+                        preset="medium"
                         fps={240}
                         video={false}
                         audio={false}
@@ -193,7 +166,7 @@ export default function CameraScreen({ navigation }) {
                     device={device}
                     isActive={isFocused}
                     photo={false}
-                    preset="high"
+                    preset="medium"
                     fps={240}
                     video={true}
                     audio={true}
@@ -236,7 +209,7 @@ export default function CameraScreen({ navigation }) {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: "center"}}>
+                        <View style={{ justifyContent: 'center', alignItems: "center" }}>
                             {!isRecording ? (
                                 <TouchableOpacity style={Styles.startVideo} onPress={() => { startRecording() }}>
                                     <Text style={Styles.startVideoText}></Text>
@@ -248,7 +221,7 @@ export default function CameraScreen({ navigation }) {
                             )}
 
                         </View>
-                        <View style={{ justifyContent: 'center', alignItems: "center"}}>
+                        <View style={{ justifyContent: 'center', alignItems: "center" }}>
                             <TouchableOpacity style={Styles.viewButton} onPress={flipCamera}>
 
                                 <Icon type='ionicon' name="camera-reverse" iconStyle={[{ color: "#000000c7" }]} style={{}} />
@@ -343,9 +316,9 @@ const Styles = StyleSheet.create({
         justifyContent: "center"
     },
     videoText: {
-        backgroundColor:"#ffffff80", 
-        padding: 5, 
-        borderRadius:20 
+        backgroundColor: "#ffffff80",
+        padding: 5,
+        borderRadius: 20
     }
 });
 

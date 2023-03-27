@@ -253,7 +253,6 @@ android {
 
 dependencies {
     implementation project(':react-native-file-access')
-    implementation project(':react-native-fs')
     implementation project(':react-native-ble-plx')
     implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
