@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import counderReducer from './slices/counter/counter'
 import imageReducer from "./slices/images/image"
+import bluetoothReducer from "./slices/bluetooth/bluetooth"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { persistStore, persistReducer } from 'redux-persist'
 
@@ -11,7 +12,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     counder: counderReducer,
-    image: imageReducer
+    image: imageReducer,
+    bluetooth : bluetoothReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

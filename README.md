@@ -26,7 +26,7 @@ App alredy having basic setup likes
 
 File Structure
 --------------
-./app  folder containing all the files & folders like.
+./src  folder containing all the files & folders like.
 
 1.   components(folder)  -->  In this folder you can store custom components which you created.
 
