@@ -107,7 +107,7 @@ export default function CameraScreen({ navigation }) {
                         video={false}
                         audio={false}
                     />
-                    <View style={{ position: "absolute", paddingBottom: responsiveHeight(90), right: 20 }}>
+                    <View style={style.flashView}>
                         {flash === "off" ? (<View>
                             <Icon type='ionicon' name="flash" iconStyle={{ color: "white" }} style={{ borderRadius: 5 }} onPress={() => {
                                 if (flash === "off") {
@@ -241,6 +241,11 @@ const Styles = StyleSheet.create({
         flex: 3,
         backgroundColor: '#000',
         justifyContent: 'center',
+    },
+    flashView: { 
+        position: "absolute", 
+        paddingBottom: responsiveHeight(90), 
+        right: 20 
     },
     camera: {
         flex: 1,
