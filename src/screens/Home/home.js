@@ -10,7 +10,9 @@ function Home({ navigation }) {
         { title: 'Bluetooth', navigateTo: 'blePlxBluetooth' },
         { title: 'FileSystem', navigateTo: 'FileSystemHandle' },
         { title: 'WebSocket', navigateTo: 'WebSocketConnection' },
-        { title: 'Http', navigateTo: 'HttpConnection' }
+        { title: 'Http', navigateTo: 'HttpConnection' },
+        { title: 'BleManager', navigateTo: 'BleManager' }
+
     ]);
 
     return (

@@ -66,8 +66,8 @@ export default function useBLE(): BluetoothLowEnergyApi {
             if (error) {
                 console.log(error);
             }
-            // if (device?.name === "SY295") {
-            if (device) {
+            if (device?.name === "SY295") {
+            // if (device) {
                 setAllDevices((prevState) => {
                     if (!isDuplicateDevice(prevState, device)) {
                         return [...prevState, device];

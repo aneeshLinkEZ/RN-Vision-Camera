@@ -9,7 +9,8 @@ import blePlxBluetooth from "../nativeApi/bluetooth/blePlxBluetooth";
 import FileSystemHandle from "../nativeApi/fileSystem/fileSystem";
 import MATSGrid from "../components/MATSGrid/MATSGrid"
 import WebSocketConnection from "../connection/webSocket/webSocket";
-import HttpConnection from "../connection/http/httpConnection"
+import HttpConnection from "../connection/http/httpConnection";
+import BleManager from "../nativeApi/bluetooth/bleManager";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +27,7 @@ function AppNavigator() {
                 <Stack.Screen name='MATSGrid' component={MATSGrid} options={{ headerShown: true }} />
                 <Stack.Screen name='WebSocketConnection' component={WebSocketConnection} options={{ headerShown: true }} />
                 <Stack.Screen name='HttpConnection' component={HttpConnection} options={{ headerShown: true }} />
-
+                <Stack.Screen name='BleManager' component={BleManager} options={{ headerShown: true }} />
             </Stack.Navigator>
         </NavigationContainer>
     )
