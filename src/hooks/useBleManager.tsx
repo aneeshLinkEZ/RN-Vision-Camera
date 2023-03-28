@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import { PermissionsAndroid, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import { PermissionsAndroid, Platform,  NativeModules, NativeEventEmitter} from "react-native";
 import BleManager from 'react-native-ble-manager';
 
 
-type PermissionCallback = (result: boolean) => void;
+const BleManagerModule = NativeModules.BleManager;
+const BleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
 
 interface BleManagerApi {
-    requestPermissions(callback: PermissionCallback): Promise<void>;
+    requestPermissions: Promise<void>;
     scanForDevices:any;
     connectToDevice;
     devices;
@@ -16,25 +18,32 @@ interface BleManagerApi {
 export default function useBleManager(): BleManagerApi {
     const [devices, setDevices] = useState([]);
     const [connectedDevice, setConnectedDevice] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
 
 
-    const requestPermissions = async (callback: PermissionCallback) => {
-        if (Platform.OS === 'android') {
-            const grantedStatus = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                {
-                    title: 'Location Permission',
-                    message: 'Bluetooth Low Energy Needs Location Permission',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'Ok',
-                    buttonNeutral: 'Maybe Later'
-
-                },
-            );
-            callback(grantedStatus === PermissionsAndroid.RESULTS.GRANTED);
-        } else {
-            callback(true)
-        }
+    const requestPermissions = async () => {
+        const a = await BleManager.enableBluetooth().then(() => {
+            console.log('Bluetooth is turned on!');
+            if (Platform.OS === 'android' && Platform.Version >= 23) {
+                PermissionsAndroid.check(
+                  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                ).then(result => {
+                  if (result) {
+                    console.log('Permission is OK');
+                  } else {
+                    PermissionsAndroid.request(
+                      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    ).then(result => {
+                      if (result) {
+                        console.log('User accept');
+                      } else {
+                        console.log('User refuse');
+                      }
+                    });
+                  }
+                });
+              }
+          });
     }
 
     const bleInit = () => {
@@ -50,13 +59,17 @@ export default function useBleManager(): BleManagerApi {
 
     const scanForDevices = () => {
         bleInit();
-        BleManager.scan([], 5, true)
-            .then(() => {
-                console.log('Scan started');
-            })
-            .catch((error) => {
-                console.log('Scan error', error);
-            });
+        // if (!isScanning) {
+            BleManager.scan([], 10, true)
+              .then(() => {
+                setIsScanning(true);
+                console.log("Scaning");
+                
+              })
+              .catch(error => {
+                console.error(error);
+              });
+        //   }
     }
 
     const connectToDevice = async (device) => {
@@ -68,6 +81,16 @@ export default function useBleManager(): BleManagerApi {
         .catch((error) => {
           console.log('Connection error', error);
         });
+    }
+
+    const stopDeviceScan = ()=>{
+        let stopListener = BleManagerEmitter.addListener(
+            'BleManagerStopScan',
+            () => {
+              setIsScanning(false);
+              console.log('Scan is stopped');
+            },
+          );
     }
 
 

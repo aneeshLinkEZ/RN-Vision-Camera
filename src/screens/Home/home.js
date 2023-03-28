@@ -11,7 +11,7 @@ function Home({ navigation }) {
         { title: 'FileSystem', navigateTo: 'FileSystemHandle' },
         { title: 'WebSocket', navigateTo: 'WebSocketConnection' },
         { title: 'Http', navigateTo: 'HttpConnection' },
-        { title: 'BleManager', navigateTo: 'BleManager' }
+        { title: 'RNBleManager', navigateTo: 'RNBleManager' }
 
     ]);
 

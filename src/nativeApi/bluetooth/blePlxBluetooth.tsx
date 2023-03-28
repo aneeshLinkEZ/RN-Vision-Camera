@@ -44,7 +44,7 @@ export default function BlePlxBluetooth({ navigation }) {
         dataMonitoring,
         dataReading,
         isConnected
-    } = useBLE();
+        } = useBLE();
 
 
     useMemo(() => {
@@ -141,7 +141,6 @@ export default function BlePlxBluetooth({ navigation }) {
     return (
         <SafeAreaView style={Styles.mainView}>
             <Text h4>BLE-Devices</Text>
-
             <FlatList
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

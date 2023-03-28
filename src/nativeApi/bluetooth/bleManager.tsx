@@ -6,13 +6,7 @@ const BleManager = () => {
     const { requestPermissions, scanForDevices,devices,connectedDevice, connectToDevice } = useBleManager();
 
     useEffect(() => {
-        requestPermissions((isGranted: boolean) => {
-            // alert("The Android Permission is Granted? " + isGranted)
-            if (isGranted) {
-                scanForDevices()
-                console.log("isGranted", isGranted);
-            }
-        });
+        requestPermissions()
     }, [])
 
     return (

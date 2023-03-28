@@ -107,7 +107,7 @@ export default function CameraScreen({ navigation }) {
                         video={false}
                         audio={false}
                     />
-                    <View style={style.flashView}>
+                    <View style={Styles.flashView}>
                         {flash === "off" ? (<View>
                             <Icon type='ionicon' name="flash" iconStyle={{ color: "white" }} style={{ borderRadius: 5 }} onPress={() => {
                                 if (flash === "off") {

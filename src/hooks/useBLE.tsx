@@ -1,9 +1,6 @@
-import { isDeclaration } from "@babel/types";
 import { useState } from "react";
-import { PermissionsAndroid, Platform } from "react-native";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { BleError, BleManager, Device, NativeDescriptor, Descriptor } from "react-native-ble-plx";
-import { Base64 } from "react-native-ble-plx";
+import { Alert, PermissionsAndroid, Platform } from "react-native";
+import { BleError, BleManager, Device } from "react-native-ble-plx";
 import { decode } from 'base-64';
 
 type PermissionCallback = (result: boolean) => void;
@@ -36,8 +33,25 @@ export default function useBLE(): BluetoothLowEnergyApi {
     const [dataMonitoring, setDataMonitoring] = useState("");
     const [dataReading, setDataReading] = useState("");
     const [isConnected, setIsConnected] = useState(false)
+    const [currentDevices, setCurrentDevices] = useState()
 
     const requestPermissions = async (callback: PermissionCallback) => {
+        const subscription = bleManager.onStateChange((state) => {
+            if (state === 'PoweredOff') {
+                Alert.alert('"BasicApp" would like to use Bluetooth.', 'This app uses Bluetooth to connect to and share information with your .....', [
+                    {
+                      text: "Don't allow",
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    { text: "Turn ON", onPress: () => { bleManager.enable(); onEnable(callback); } },
+                  ]);
+                  subscription.remove();
+            }
+        }, true);
+    }
+
+    const onEnable = async(callback: PermissionCallback)=>{
         if (Platform.OS === 'android') {
             const grantedStatus = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -67,7 +81,7 @@ export default function useBLE(): BluetoothLowEnergyApi {
                 console.log(error);
             }
             if (device?.name === "SY295") {
-            // if (device) {
+                // if (device) {
                 setAllDevices((prevState) => {
                     if (!isDuplicateDevice(prevState, device)) {
                         return [...prevState, device];
@@ -84,17 +98,18 @@ export default function useBLE(): BluetoothLowEnergyApi {
         try {
             const deviceConnection = await bleManager.connectToDevice(deviceId);
             setDevice(deviceConnection);
+            setCurrentDevices(deviceConnection);
             isDeviceConnected(deviceConnection)
 
             bleManager.stopDeviceScan();
             const d = await bleManager.discoverAllServicesAndCharacteristicsForDevice(deviceId);
 
             // Checking all available services
-            const services = await deviceConnection.services();
-            services.forEach(async service => {
-                const characteristics = await deviceConnection.characteristicsForService(service.uuid);
-                characteristics.forEach(console.log);
-            });
+            // const services = await deviceConnection.services();
+            // services.forEach(async service => {
+            //     const characteristics = await deviceConnection.characteristicsForService(service.uuid);
+            //     characteristics.forEach(console.log);
+            // });
 
             const v = await bleManager.readCharacteristicForDevice(deviceId, serviceUUID, characteristicUUID)
             console.log("readCharacteristicForDevice : ", v);
@@ -116,6 +131,8 @@ export default function useBLE(): BluetoothLowEnergyApi {
         }
     }
 
+
+
     // const convertValue = (value) => {
     //     const dataView = new DataView(characteristic.value.buffer);
     //     const valueNumber = dataView.getUint32(0); // assumes the value is a 32-bit unsigned integer
@@ -132,7 +149,8 @@ export default function useBLE(): BluetoothLowEnergyApi {
     }
 
     const readingData = async (device) => {
-
+        const value = await characteristic.read();
+        console.log(value);
         device.readCharacteristic(characteristicUUID).then((char) => {
             console.log(char);
         })
@@ -212,5 +230,5 @@ export default function useBLE(): BluetoothLowEnergyApi {
         dataMonitoring,
         dataReading,
         isConnected
-    }
+        }
 }
