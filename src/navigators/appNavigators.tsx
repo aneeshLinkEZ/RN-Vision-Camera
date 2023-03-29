@@ -1,6 +1,8 @@
 import React from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import RNBootSplash from "react-native-bootsplash";
+
 import Home from "../screens/Home/home";
 import Counter from "../screens/counter/counter";
 import Camera from "../nativeApi/Camera/RNVCamera";
@@ -10,14 +12,13 @@ import FileSystemHandle from "../nativeApi/fileSystem/fileSystem";
 import MATSGrid from "../components/MATSGrid/MATSGrid"
 import WebSocketConnection from "../connection/webSocket/webSocket";
 import HttpConnection from "../connection/http/httpConnection";
-import BleManager from "../nativeApi/bluetooth/bleManager";
-import RNBleManager from "../nativeApi/bluetooth/bleManager";
+
 
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
     return (
-        <NavigationContainer>
+        <NavigationContainer onReady={() => RNBootSplash.hide()}>
             <Stack.Navigator>
                 <Stack.Screen name='Home' component={Home} options={{ headerShown: false }} />
                 <Stack.Screen name='Counter' component={Counter} options={{ headerShown: true }} />
@@ -28,7 +29,6 @@ function AppNavigator() {
                 <Stack.Screen name='MATSGrid' component={MATSGrid} options={{ headerShown: true }} />
                 <Stack.Screen name='WebSocketConnection' component={WebSocketConnection} options={{ headerShown: true }} />
                 <Stack.Screen name='HttpConnection' component={HttpConnection} options={{ headerShown: true }} />
-                <Stack.Screen name='RNBleManager' component={RNBleManager} options={{ headerShown: true }} />
             </Stack.Navigator>
         </NavigationContainer>
     )

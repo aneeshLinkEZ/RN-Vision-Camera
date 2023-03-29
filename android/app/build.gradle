@@ -252,6 +252,7 @@ android {
 }
 
 dependencies {
+    //implementation("androidx.core:core-splashscreen:1.0.0") // Add this line
     implementation project(':react-native-file-access')
     implementation project(':react-native-ble-plx')
     implementation project(':react-native-vector-icons')
