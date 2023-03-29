@@ -1,18 +1,12 @@
 import { Button, Overlay, Text } from "@rneui/base";
-import React, { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, View, StyleSheet, ScrollView, SafeAreaView, RefreshControl, Modal, FlatList, TextInput } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import React, { useMemo, useState } from "react";
+import { ActivityIndicator, View, StyleSheet, SafeAreaView, RefreshControl, FlatList, TextInput } from "react-native";
 import useBLE from "../../hooks/useBLE";
 import {
-    responsiveHeight,
-    responsiveWidth,
-    responsiveFontSize
-} from "react-native-responsive-dimensions";
+    responsiveWidth} from "react-native-responsive-dimensions";
 
 
 export default function BlePlxBluetooth({ navigation }) {
-    // const allDevices : {} = useAppSelector(state => state.bluetooth.bluetooth)    
-
     const [refreshing, setRefreshing] = useState(false);
     const [visible, setVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -40,16 +34,13 @@ export default function BlePlxBluetooth({ navigation }) {
         connectToDevice,
         disConnect,
         allDevices,
-        currentDevices,
         dataMonitoring,
-        dataReading,
         isConnected
         } = useBLE();
 
 
     useMemo(() => {
         requestPermissions((isGranted: boolean) => {
-            // alert("The Android Permission is Granted? " + isGranted)
             if (isGranted) {
                 scanForDevices();
             }
@@ -65,18 +56,13 @@ export default function BlePlxBluetooth({ navigation }) {
             <Text h4>Device Datails</Text>
             <Text >{device.name}</Text>
             <Text >{device.id}</Text>
-            {/* <Text>{device?.serviceData}</Text> */}
             <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Button title="Connect" buttonStyle={Styles.connectBtn} onPress={() => { connectToDevice(device.id), toggleOverlay() }} />
-
-                {/* <Button title="Disconnect" buttonStyle={[Styles.connectBtn,{width: 105}]} onPress={() => { disConnect(), toggleOverlay() }} /> */}
             </View>
         </View>)
     }
 
     const ShowDetailsModal = (data: any) => {
-        // console.log("deviceDetails", deviceDetails);
-
         return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
             <Text h4>show Datails</Text>
             <Text >Name : {deviceDetails?.name || "null"}</Text>
@@ -88,8 +74,6 @@ export default function BlePlxBluetooth({ navigation }) {
     }
 
     const renderItem = ({item}) => {
-        // console.log(item);
-        
         return(
             <View>
             <View style={{ marginBottom: 5, padding: 2, borderWidth: 1, borderColor: 'black' }}>
@@ -117,7 +101,6 @@ export default function BlePlxBluetooth({ navigation }) {
                             editable={false}
                             style={Styles.input}
                             placeholder="Monotoring the Ble Device...."
-                            // onChangeText={onChangeText}
                             value={dataMonitoring}
                         />
                     </View>
@@ -127,8 +110,6 @@ export default function BlePlxBluetooth({ navigation }) {
         </View>
         )
     }
-
-
 
     return (
         <SafeAreaView style={Styles.mainView}>

@@ -83,11 +83,7 @@ export default function CameraScreen({ navigation }) {
 
 
     function flipCamera() {
-        if (device === devices.back) {
-            setDevice(devices.front)
-        } else {
-            setDevice(devices.back)
-        }
+        {(device === devices.back) ? setDevice(devices.front) : setDevice(devices.back)}
     }
 
 
@@ -233,7 +229,6 @@ export default function CameraScreen({ navigation }) {
 
         </View>
     )
-
 }
 
 const Styles = StyleSheet.create({
@@ -306,7 +301,6 @@ const Styles = StyleSheet.create({
         width: 70,
         height: 70,
         borderRadius: 40,
-        // backgroundColor: 'red',
         borderColor: "red",
         borderWidth: 5,
         marginVertical: 20,

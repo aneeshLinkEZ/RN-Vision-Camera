@@ -16,7 +16,6 @@ interface BluetoothLowEnergyApi {
     connectToDevice(device: Device): Promise<void>;
     disConnect(): void;
     dataMonitoring: string;
-    dataReading: string;
     allDevices: Device[];
     isConnected: Promise<void>;
 }
@@ -24,9 +23,7 @@ interface BluetoothLowEnergyApi {
 export default function useBLE(): BluetoothLowEnergyApi {
 
     const [allDevices, setAllDevices] = useState([]);
-    const [device, setDevice] = useState();
     const [dataMonitoring, setDataMonitoring] = useState("");
-    const [dataReading, setDataReading] = useState("");
     const [isConnected, setIsConnected] = useState(false)
     const [currentDevices, setCurrentDevices] = useState()
 
@@ -93,7 +90,6 @@ export default function useBLE(): BluetoothLowEnergyApi {
 
         try {
             const deviceConnection = await bleManager.connectToDevice(deviceId);
-            setDevice(deviceConnection);
             setCurrentDevices(deviceConnection);
             isDeviceConnected(deviceConnection)
 
@@ -107,14 +103,7 @@ export default function useBLE(): BluetoothLowEnergyApi {
                 characteristics.forEach(console.log);
             });
             
-
-            // const service = await d.getService(serviceUUID);
-            // const characteristic = await service.getCharacteristic(characteristicUUID);
-
-            // await characteristic.setNotify(true);
             startStreamingData(d);
-            //readingData(d);
-
         } catch (e) {
             alert(e)
             console.log("Error while Connecting " + e);
@@ -124,30 +113,11 @@ export default function useBLE(): BluetoothLowEnergyApi {
     const startStreamingData = async (device: Device) => {
         if (device) {
             device.monitorCharacteristicForService(serviceUUID, characteristicUUID, onDataUpdate)
-
-            // device.
         } else {
             console.error("No Device Connected")
         }
     }
 
-    const onGetData = async (error: BleError | null, characteristic: Characteristic | null) => {
-        console.log("error", error);
-        console.log("characteristic111111", characteristic);
-    }
-
-    const readingData = async (device) => {
-        device.readCharacteristicForService(serviceUUID, characteristicUUID)
-        .then((characteristic) => {
-
-            
-            setDataReading(characteristic.value)
-            // console.log('characteristic :', characteristic);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
 
     const onDataUpdate = (error: BleError | null, characteristic: Characteristic | null) => {
         if (error) {
@@ -156,14 +126,10 @@ export default function useBLE(): BluetoothLowEnergyApi {
             return;
         }
         else if (characteristic.value) {
-            // getting the values
-            // console.log(characteristic.value);
             var atob = require('atob');
             const rawData = atob(characteristic.value);
-            console.log("rawData", rawData);
+            // console.log("rawData", rawData);
             setDataMonitoring(rawData)
-
-
             return;
         } else if (!characteristic?.value) {
             console.error("No Characteristic Found");
@@ -195,12 +161,10 @@ export default function useBLE(): BluetoothLowEnergyApi {
         // Handle the disconnect event
         device.onDisconnected((error, disconnectedDevice) => {
             if (error) {
-                // console.log('Error disconnecting:', error);
                 alert("Error disconnecting: " + error)
 
             } else {
                 alert("Disconnected from device: " + disconnectedDevice.id)
-                // console.log('Disconnected from device:', disconnectedDevice.id);
             }
         });
         isDeviceConnected(device);
@@ -213,7 +177,6 @@ export default function useBLE(): BluetoothLowEnergyApi {
         connectToDevice,
         disConnect,
         dataMonitoring,
-        dataReading,
         isConnected
     }
 }
