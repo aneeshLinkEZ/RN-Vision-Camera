@@ -1,5 +1,5 @@
 import React from "react";
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RNBootSplash from "react-native-bootsplash";
 
@@ -13,12 +13,23 @@ import MATSGrid from "../components/MATSGrid/MATSGrid"
 import WebSocketConnection from "../connection/webSocket/webSocket";
 import HttpConnection from "../connection/http/httpConnection";
 
+const MyTheme = {
+    colors: {
+        primary: 'green',
+        background: "#e35509",
+        card: "red",
+        text: "#040169",
+        border: "#000000",
+        notification: "#497bcc",
+        button:"green"
+    },
+  };
 
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
     return (
-        <NavigationContainer onReady={() => RNBootSplash.hide()}>
+        <NavigationContainer onReady={() => RNBootSplash.hide()} theme={MyTheme}>
             <Stack.Navigator>
                 <Stack.Screen name='Home' component={Home} options={{ headerShown: false }} />
                 <Stack.Screen name='Counter' component={Counter} options={{ headerShown: true }} />
