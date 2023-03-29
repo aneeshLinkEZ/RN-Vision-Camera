@@ -75,7 +75,7 @@ export default function BlePlxBluetooth({ navigation }) {
     }
 
     const ShowDetailsModal = (data: any) => {
-        console.log("deviceDetails", deviceDetails);
+        // console.log("deviceDetails", deviceDetails);
 
         return (<View style={{ width: responsiveWidth(50), justifyContent: "center" }}>
             <Text h4>show Datails</Text>
@@ -88,7 +88,7 @@ export default function BlePlxBluetooth({ navigation }) {
     }
 
     const renderItem = ({item}) => {
-        console.log(item);
+        // console.log(item);
         
         return(
             <View>
@@ -111,18 +111,10 @@ export default function BlePlxBluetooth({ navigation }) {
                     </View>
                 </View>
                 <View>
-                    <View style={Styles.row}>
-                        <Text style={{ marginVertical: 20 }}>Reading Data : </Text>
-                        <TextInput
-                            style={Styles.input}
-                            // onChangeText={onChangeText}
-                            placeholder="Reading from Ble Device...."
-                            value={dataReading}
-                        />
-                    </View>
                     <View style={[Styles.row]}>
                         <Text style={{ marginVertical: 20 }}>Monitoring Data : </Text>
                         <TextInput
+                            editable={false}
                             style={Styles.input}
                             placeholder="Monotoring the Ble Device...."
                             // onChangeText={onChangeText}
