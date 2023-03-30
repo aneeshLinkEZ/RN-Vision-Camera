@@ -1,12 +1,12 @@
 import { Button, Overlay, Text } from "@rneui/base";
 import React, { useMemo, useState } from "react";
 import { ActivityIndicator, View, StyleSheet, SafeAreaView, RefreshControl, FlatList, TextInput } from "react-native";
-import useBLE from "../../hooks/useBLE";
+import useBLE from "../../hooks/useBLE2";
 import {
     responsiveWidth} from "react-native-responsive-dimensions";
 
 
-export default function BlePlxBluetooth({ navigation }) {
+export default function BlePlxBluetooth2({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [visible, setVisible] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -98,7 +98,7 @@ export default function BlePlxBluetooth({ navigation }) {
                     <View style={[Styles.row]}>
                         <Text style={{ marginVertical: 20 }}>Monitoring Data : </Text>
                         <TextInput
-                            editable={false}
+                            // editable={false}
                             style={Styles.input}
                             placeholder="Monotoring the Ble Device...."
                             value={dataMonitoring}
@@ -113,7 +113,7 @@ export default function BlePlxBluetooth({ navigation }) {
 
     return (
         <SafeAreaView style={Styles.mainView}>
-            <Text h4>BLE-Devices</Text>
+            <Text h4>BLE-Devices-2</Text>
             <FlatList
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -129,9 +129,9 @@ export default function BlePlxBluetooth({ navigation }) {
 
 const Styles = StyleSheet.create({
     mainView: {
-        flex: 1,
+        // flex: 1,
         margin: 10,
-        alignItems: 'center'
+        // alignItems: 'center'
     },
     row: {
         flexDirection: "row"

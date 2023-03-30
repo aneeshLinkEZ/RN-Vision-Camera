@@ -7,11 +7,15 @@ function Home({ navigation }) {
     const [items, setItems] = React.useState([
         { title: 'Counter', navigateTo: 'Counter' },
         { title: 'Camera', navigateTo: 'Camera' },
-        { title: 'Bluetooth', navigateTo: 'blePlxBluetooth' },
+        { title: 'Bluetooth1', navigateTo: 'blePlxBluetooth1' },
         { title: 'FileSystem', navigateTo: 'FileSystemHandle' },
         { title: 'WebSocket', navigateTo: 'WebSocketConnection' },
         { title: 'Http', navigateTo: 'HttpConnection' },
-        { title: 'RNBleManager', navigateTo: 'RNBleManager' }
+        { title: 'RNBleManager', navigateTo: 'RNBleManager' },
+        { title: 'Bluetooth2', navigateTo: 'BlePlxBluetooth2' },
+        { title: 'Multi', navigateTo: 'Multi' }
+
+
 
     ]);
 
@@ -23,8 +27,6 @@ function Home({ navigation }) {
                 itemDimension={130}
                 data={items}
                 style={styles.gridView}
-                // staticDimension={300}
-                // fixed
                 spacing={10}
                 renderItem={({ item }) => (
                     <TouchableOpacity style={[styles.itemContainer]} onPress={() => navigation.navigate(item.navigateTo)} >
